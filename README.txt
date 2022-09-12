@@ -7,8 +7,7 @@ For each integer Z > 0, define f:Z -> Z to be the following:
 	f(n) = 3*n + 1 if n is odd
 Does this sequence reach "1" eventually for every positive integer?
 
-The challenge featured trying to find numbers with especially long collatz seuquences. I tried 2 approaches: First, I guessed 3 billion numbers randomly, trying to find 
-the longest collatz-sequence numbers I could find. Secondly, I tried working the opposite way, exploring the tree built using the inverse operation:
+The challenge featured trying to find numbers with especially long collatz seuquences. I tried 2 approaches: First, I guessed 3 billion numbers randomly, trying to find the longest collatz-sequence numbers I could find. Secondly, I tried working the opposite way, exploring the tree built using the inverse operation:
 	g(n) = {2n, or (n-1)/3 if n % 6 == 4}
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -25,5 +24,4 @@ The results:
 		10331
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-As you can see, the second method turned out much better. I settled on a beam search algorithm. It's application to large search spaces is truly impressive,
-it could be used almost everywhere. 
+As you can see, the second method turned out much better. I settled on a beam search algorithm. It's application to large search spaces is truly impressive, it could be used almost everywhere. 
