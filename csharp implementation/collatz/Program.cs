@@ -63,10 +63,10 @@ class Program
     /// <param name="end"></param>
     /// <param name="numGuesses"></param>
     /// <param name="outputFile"></param>
-    public static void MonteCarlo(int[] c, int[] d, int[] c3, int[] l, int k, BigInteger numGuesses, string outputFile)
+    public static int MonteCarlo(int[] c, int[] d, int[] c3, int[] l, int k, BigInteger numGuesses, string outputFile)
     {
-        StreamWriter sw = new StreamWriter(outputFile);
 
+        StreamWriter sw = File.AppendText(outputFile);
         BigInteger newNum, newNumCopy, a;
         int b;
         byte[] randomByteArray = new byte[43] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -82,6 +82,7 @@ class Program
         {
             //find random bigint
             rand.NextBytes(randomByteArray);
+            randomByteArray[0] = 27;
             randomByteArray[41] = 17;
             randomByteArray[42] = 0;
             newNum = new BigInteger(randomByteArray);
@@ -107,37 +108,87 @@ class Program
         }
 
         //delete sw
+        sw.WriteLine("\n\n");
         sw.Dispose();
+
+        //return max_found
+        return max_found;
+
     }
 
     public static void TestValues()
     {
-        string path = @"C:\Users\dramo\programs\csharp\source\repos\collatz\collatz\record2.txt";
+        string path = @"C:\Users\dramo\programs\contest\collatz\csharp implementation\collatz\record2.txt";
         PrecomputationTables tables;
-        for(int j = 17; j < 25; j++)
+        double m = double.MaxValue;
+        int k = 0;
+        for(int j = 2; j < 20; j++)
         {
             tables = new PrecomputationTables(j);
             DateTime before = DateTime.Now;
-            MonteCarlo(tables.C, tables.D, tables.C3, tables.L, j, 100000, path);
+            MonteCarlo(tables.C, tables.D, tables.C3, tables.L, j, 10000, path);
             DateTime after = DateTime.Now;
             Console.WriteLine($"Value tested:{j}\n\nTime elapsed: {(after - before).TotalSeconds}\n\n");
+            
+            if((after - before).TotalSeconds < m)
+            {
+                k = j;
+                m = (after - before).TotalSeconds;
+            }
+            
         }
+        Console.WriteLine($"\n\nBest found: k = {k}, with time {m}");
+        Console.Read();
+    }
+
+    public static void RunMonteCarlo()
+    {
+        int calculations;
+        int rate = 54000;
+        bool doCalculation;
+        do
+        {
+            Console.WriteLine("Please enter the number of large numbers you wish to check:");
+            string? input = Console.ReadLine();
+            doCalculation = int.TryParse(input, out calculations);
+            if (!doCalculation)
+            {
+                Console.WriteLine("\tERROR:Couldn't parse input. Please enter another number.");
+            }
+            else
+            {
+                Console.WriteLine($"{calculations} numbers to be checked. This is estimated to take {(float)calculations / rate / 3600} hours. Is this okay?(y/n)");
+                input = Console.ReadLine();
+                if (input == null || !(input.ToLower() == "y" || input.ToLower() == "yes"))
+                {
+                    doCalculation = false;
+                }
+            }
+        } while (!doCalculation);
+
+
+        string path = @"C:\Users\dramo\programs\contest\collatz\csharp implementation\collatz\record.txt";
+
+        //control variable
+        int k = 17;
+
+        //precompute values.
+        Console.WriteLine("Constructing pre-computation tables...");
+        PrecomputationTables tables = new PrecomputationTables(k);
+
+        Console.WriteLine("Starting computations...");
+        //timeit
+        DateTime before = DateTime.Now;
+        int maxFound = MonteCarlo(tables.C, tables.D, tables.C3, tables.L, k, calculations, path);
+        DateTime after = DateTime.Now;
+        Console.WriteLine($"Time elapsed: {(after - before).TotalSeconds}\n\n");
+        Console.WriteLine($"Largest stopping time found: {maxFound}. Record can be found at {path}");
+        Console.WriteLine("Press <enter> to exit.");
         Console.Read();
     }
     public static void Main()
     {
-        string path = @"C:\Users\dramo\programs\csharp\source\repos\collatz\collatz\record2.txt";
-        //control variable
-        int k = 18;
-
-        //precompute values.
-        PrecomputationTables tables = new PrecomputationTables(k);
-
-        //timeit
-        DateTime before = DateTime.Now;
-        MonteCarlo(tables.C, tables.D, tables.C3, tables.L, k, 100000, path);
-        DateTime after = DateTime.Now;
-        Console.WriteLine($"Time elapsed: {(after - before).TotalSeconds}\n\n");
+        RunMonteCarlo(); 
     }
 }
 
@@ -152,6 +203,7 @@ class PrecomputationTables
 
     public PrecomputationTables(int k)
     {
+        k = Math.Max(k, 1);
         int size = (int)Math.Pow(2, k);
         c = new int[size];
         d = new int[size];
