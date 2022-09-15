@@ -5,6 +5,8 @@ The Collatz Conjecture is the simplest unsolved question in mathematics. It goes
 For each integer Z > 0, define f:Z -> Z to be the following:
 	f(n) = n / 2 if n is even
 	f(n) = 3*n + 1 if n is odd
+Now imagine the sequence formed by repeated applications of this function. For example, starting with 5:
+5 -> 16 -> 8 -> 4 -> 2 -> 1
 Does this sequence reach "1" eventually for every positive integer?
 
 The challenge featured trying to find numbers with especially long collatz seuquences. I tried 2 approaches: First, I guessed 3 billion numbers randomly, trying to find the longest collatz-sequence numbers I could find. Secondly, I tried working the opposite way, exploring the tree built using the inverse operation:
